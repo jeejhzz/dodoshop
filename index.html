@@ -1,222 +1,226 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Gift, Mail, ExternalLink, ChevronRight, ChevronLeft, X } from 'lucide-react';
-
-const App = () => {
-  const [isLetterOpen, setIsLetterOpen] = useState(false);
-  const [selectedGift, setSelectedGift] = useState(null);
-  
-  const gifts = [
-    {
-      id: 1,
-      name: "젠틀몬스터 주드",
-      link: "https://smartstore.naver.com/glasscode3927/products/11432795000?nl-ts-pid=jPLeEwqWXMrcJw1iGss-118433&NaPm=ct%3Dmo45ctm5%7Cci%3DCnQI0gAAAZ2f9sj0AtXEgQ%2E%2E01%7Ctr%3Dpmax%7Chk%3D9810155c88fc74bfc8abdb1be1c1601af717d08f%7Cnacn%3DP1HGB0g43WOJ",
-      pros: "착용하는 순간 연예인 아우라 뿜뿜. 얼굴이 작아 보이는 마법!",
-      cons: "너무 멋있어서 거울 보느라 약속 시간에 늦을 수 있음.",
-      emoji: "😎"
-    },
-    {
-      id: 2,
-      name: "애플 매직트랙패드",
-      link: "https://www.coupang.com/vp/products/8442302501?itemId=24420213368&vendorItemId=91434626035&src=1042501&spec=10304968&addtag=400&ctag=8442302501&lptag=I24420213369&itime=20260418184132&pageType=PRODUCT&pageValue=8442302501&wPcid=17685256207988936523258&wRef=search.shopping.naver.com&wTime=20260418184132&redirect=landing&mcid=13f7dc48a1bb40d9ab163772f49c398c&n_ad_group=grp-a001-02-000000039433410&n_ad=nad-a001-02-000000340857252&n_rank=1&n_media=11068&n_query=%EC%95%A0%ED%94%8C%EB%A7%A4%EC%A7%81%ED%8A%B8%EB%9E%99%ED%8C%A8%EB%93%9C",
-      pros: "손가락 끝에서 펼쳐지는 삶의 질 수직 상승. 데스크테리어의 완성.",
-      cons: "한 번 쓰면 일반 마우스는 답답해서 못 쓰는 '불치병'에 걸림.",
-      emoji: "🖱️"
-    },
-    {
-      id: 3,
-      name: "메디큐브 부스터브이롤러",
-      link: "https://themedicube.co.kr/product/detail.html?product_no=2619&cate_no=308&display_group=1&cafe_mkt=naver_ks&mkt_in=Y&ghost_mall_id=naver&ref=naver_open&n_media=11068&n_query=%EB%A9%94%EB%94%94%ED%81%90%EB%B8%8C%EB%B6%80%EC%8A%A4%ED%84%B0%EB%B8%8C%EC%9D%B4%EB%A1%A4%EB%9F%AC&n_rank=1&n_ad_group=grp-a001-02-000000033176850&n_ad=nad-a001-02-000000448744746&n_campaign_type=2&n_mall_id=medicube&n_mall_pid=2619&n_ad_group_type=2&n_match=3&NaPm=ct%3Dmo45emvn%7Cci%3DERdfefea41%2D3b0a%2D11f1%2D8ff9%2Df689aabbd00d%7Ctr%3Dpla%7Chk%3D788bd77cf5bf0741a6c1f97d8d2f514537f6444a%7Cnacn%3DP1HGB0g43WOJ",
-      pros: "내일 아침이면 도연이 피부가 탕후루처럼 반짝반짝.",
-      cons: "너무 열심히 문지르면 턱선이 너무 날카로워져서 위험할 수 있음.",
-      emoji: "✨"
-    },
-    {
-      id: 4,
-      name: "나이키 페가수스42",
-      link: "https://www.nike.com/kr/t/pegasus-42-womens-road-running-shoes-wsTF7yIV/IB1881-500?utm_source=naver&utm_medium=sp&utm_campaign=all_pc&utm_term=all&cp=82679051715_search_&NaPm=ct%3Dmo45fe1k%7Cci%3Df42e2c176439593863804fbb1bd4e0d571eda2aa%7Ctr%3Dslsl%7Csn%3D232345%7Chk%3Dfc900207dd3d3bc26aefaed1f4b4bc90c2fa642d",
-      pros: "구름 위를 걷는 기분. 도연이가 어디든 가뿐하게 날아갈 수 있음.",
-      cons: "너무 편해서 집 안에서도 신고 있고 싶어질지도 모름.",
-      emoji: "🏃🏻‍♀️"
-    },
-    {
-      id: 5,
-      name: "하만카돈 루나",
-      link: "https://www.ssg.com/item/itemView.ssg?itemId=1000568303462&siteNo=6001&salestrNo=6005&ckwhere=ssg_naver&appPopYn=n&utm_medium=PCS&utm_source=naver&utm_campaign=naver_pcs&NaPm=ct%3Dmo457to0%7Cci%3D5ca720c803020de7182df41752bb0e8b35a0d48a%7Ctr%3Dslsl%7Csn%3D218835%7Chk%3D06bdb2e9c8a5a0c184426362550f72184958268d",
-      pros: "귀 호강 종결자. 디자인까지 예뻐서 인테리어 지수 급상승.",
-      cons: "음질이 너무 좋아서 집이 순식간에 콘서트홀로 변함 (이웃 주의).",
-      emoji: "🔊"
-    },
-    {
-      id: 6,
-      name: "메모 일하도멜",
-      link: "https://www.coupang.com/vp/products/7490612959?itemId=23317498148&vendorItemId=91576818691&src=1042501&spec=10304968&addtag=400&ctag=7490612959&lptag=I23317498148&itime=20260418184338&pageType=PRODUCT&pageValue=7490612959&wPcid=17685256207988936523258&wRef=search.shopping.naver.com&wTime=20260418184338&redirect=landing&mcid=2c6ae550e3a6411e97d9b7c57dad43f6&n_ad_group=grp-a001-02-000000041485475&n_ad=nad-a001-02-000000441424862&n_rank=1&n_media=11068&n_query=%EB%A9%94%EB%AA%A8%EC%9D%BC%ED%95%98%EB%8F%84%EB%A9%9C",
-      pros: "지나가면 10명 중 9명이 향수 뭐냐고 물어볼 매혹적인 향기.",
-      cons: "벌들이 도연이를 꽃인 줄 알고 따라올 수 있으니 주의 요망.",
-      emoji: "🌸"
-    }
-  ];
-
-  // Carousel auto-scroll logic
-  const [scrollPos, setScrollPos] = useState(0);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (containerRef.current) {
-        const maxScroll = containerRef.current.scrollWidth - containerRef.current.clientWidth;
-        if (scrollPos >= maxScroll) {
-          setScrollPos(0);
-          containerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          setScrollPos(prev => prev + 300);
-          containerRef.current.scrollTo({ left: scrollPos + 300, behavior: 'smooth' });
-        }
-      }
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [scrollPos]);
-
-  return (
-    <div className="min-h-screen bg-pink-50 font-sans text-gray-800 pb-20">
-      {/* Header */}
-      <header className="pt-12 pb-8 text-center bg-white shadow-sm mb-8 rounded-b-[3rem]">
-        <h1 className="text-4xl font-bold text-pink-500 mb-2 flex items-center justify-center gap-2">
-          <Gift className="w-8 h-8" />
-          Gift Shop for DoDo
-        </h1>
-        <p className="text-gray-500 italic">2026.04.19 Happy Birthday Doyeon!</p>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-6">
-        {/* Letter Section */}
-        <section className="mb-16">
-          <div 
-            onClick={() => setIsLetterOpen(!isLetterOpen)}
-            className={`cursor-pointer transition-all duration-500 transform ${isLetterOpen ? 'scale-105' : 'hover:scale-102'}`}
-          >
-            {!isLetterOpen ? (
-              <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-pink-100 flex flex-col items-center gap-4">
-                <Mail className="w-12 h-12 text-pink-400 animate-bounce" />
-                <p className="text-xl font-medium text-pink-600">준희로부터 온 편지가 도착했어요 (클릭!)</p>
-              </div>
-            ) : (
-              <div className="bg-white p-10 rounded-2xl shadow-xl border-l-8 border-pink-400 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4">
-                  <Heart className="w-8 h-8 text-pink-200 fill-pink-200" />
-                </div>
-                <div className="space-y-4 leading-relaxed text-lg">
-                  <p className="font-bold text-pink-600 text-xl">사랑하는 도연아,</p>
-                  <p>안녕! 벌써 우리가 함께 맞이하는 또 한 번의 생일이네.</p>
-                  <p>곧 있으면 네 27번째 생일이 다가오는데, 이번에는 좀 더 특별하게 선물을 주고 싶어서 이렇게 작은 샵을 열어봤어.</p>
-                  <p>네가 어떤 걸 좋아할지 한참을 고민하면서 몇 가지 후보를 골라봤는데, 이 중에서 도연이가 가장 마음에 드는 걸로 하나 콕 집어주면 좋겠어!</p>
-                  <p>태어나줘서 고맙고, 너의 27살이 작년보다 더 행복하고 반짝거리길 바랄게. 평생 아끼고 사랑할게.</p>
-                  <div className="pt-6 text-right font-medium">
-                    <p>2026년 4월 19일</p>
-                    <p className="text-xl text-pink-600">준희가 💌</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Gift Carousel */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Heart className="text-pink-400" />
-              오늘의 선물 후보
-            </h2>
-            <span className="text-sm text-gray-400">옆으로 넘겨보세요 →</span>
-          </div>
-          
-          <div 
-            ref={containerRef}
-            className="flex overflow-x-auto gap-6 pb-6 no-scrollbar snap-x scroll-smooth"
-            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
-          >
-            {gifts.map((gift) => (
-              <div 
-                key={gift.id}
-                onClick={() => setSelectedGift(gift)}
-                className="min-w-[280px] bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition-all cursor-pointer snap-center border border-pink-50"
-              >
-                <div className="text-5xl mb-4 text-center">{gift.emoji}</div>
-                <h3 className="text-xl font-bold mb-4 text-center text-gray-700">{gift.name}</h3>
-                <div className="space-y-3">
-                  <div className="bg-blue-50 p-3 rounded-xl text-sm">
-                    <span className="font-bold text-blue-600 block mb-1">👍 장점</span>
-                    {gift.pros}
-                  </div>
-                  <div className="bg-red-50 p-3 rounded-xl text-sm">
-                    <span className="font-bold text-red-600 block mb-1">👎 단점</span>
-                    {gift.cons}
-                  </div>
-                </div>
-                <button className="w-full mt-6 bg-pink-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-pink-600 transition-colors">
-                  자세히 보기 <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-
-      {/* Footer message */}
-      <footer className="text-center text-gray-400 text-sm mt-10">
-        <p>© 2026 Junhee's Special Gift Service</p>
-      </footer>
-
-      {/* Modal for Gift Selection */}
-      {selectedGift && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white rounded-[2.5rem] max-w-md w-full p-8 relative animate-in fade-in zoom-in duration-300">
-            <button 
-              onClick={() => setSelectedGift(null)}
-              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <X className="w-6 h-6 text-gray-400" />
-            </button>
-            
-            <div className="text-center mb-8">
-              <div className="text-7xl mb-4">{selectedGift.emoji}</div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-2">{selectedGift.name}</h3>
-              <p className="text-pink-500 font-medium">이 선물이 도연이의 원픽일까?</p>
-            </div>
-
-            <div className="space-y-4 mb-8">
-              <div className="border-l-4 border-blue-400 pl-4 py-1">
-                <p className="text-sm font-bold text-blue-500 mb-1">리얼 장점</p>
-                <p className="text-gray-700">{selectedGift.pros}</p>
-              </div>
-              <div className="border-l-4 border-red-400 pl-4 py-1">
-                <p className="text-sm font-bold text-red-500 mb-1">솔직 단점</p>
-                <p className="text-gray-700">{selectedGift.cons}</p>
-              </div>
-            </div>
-
-            <a 
-              href={selectedGift.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full bg-pink-500 text-white text-center py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-pink-600 transition-all flex items-center justify-center gap-2"
-            >
-              상품 상세정보 확인하기 <ExternalLink className="w-5 h-5" />
-            </a>
-            
-            <p className="text-center text-xs text-gray-400 mt-4">
-              * 확인 후 준희에게 알려주면 바로 주문 들어갑니다! 🚀
-            </p>
-          </div>
-        </div>
-      )}
-
-      <style>{`
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Shop for DoDo</title>
+    <!-- React & Babel for JSX -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .hover\\:scale-102:hover { transform: scale(1.02); }
-      `}</style>
-    </div>
-  );
-};
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+            50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+        }
+        .animate-bounce-slow { animation: bounce-slow 2s infinite; }
+    </style>
+</head>
+<body class="bg-pink-50">
+    <div id="root"></div>
 
-export default App;
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Lucide Icon Component Wrapper
+        const Icon = ({ name, className = "w-6 h-6" }) => {
+            const [svg, setSvg] = useState('');
+            useEffect(() => {
+                const icon = lucide.icons[name];
+                if (icon) {
+                    const svgString = lucide.createIcons({
+                        icons: { [name]: icon },
+                        attrs: { class: className }
+                    });
+                }
+                // Fallback using direct lucide call if available
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name, className]);
+
+            // Simple direct SVG mapping for essential icons to ensure they show up
+            const icons = {
+                Heart: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+                Gift: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5Z"/></svg>,
+                Mail: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>,
+                ExternalLink: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>,
+                X: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+                ChevronRight: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>
+            };
+            return icons[name] || null;
+        };
+
+        const App = () => {
+            const [isLetterOpen, setIsLetterOpen] = useState(false);
+            const [selectedGift, setSelectedGift] = useState(null);
+            
+            const gifts = [
+                { id: 1, name: "젠틀몬스터 주드", link: "https://smartstore.naver.com/glasscode3927/products/11432795000", pros: "착용하는 순간 연예인 아우라 뿜뿜. 얼굴이 작아 보이는 마법!", cons: "너무 멋있어서 거울 보느라 약속 시간에 늦을 수 있음.", emoji: "😎" },
+                { id: 2, name: "애플 매직트랙패드", link: "https://www.coupang.com/vp/products/8442302501", pros: "손가락 끝에서 펼쳐지는 삶의 질 수직 상승. 데스크테리어의 완성.", cons: "한 번 쓰면 일반 마우스는 답답해서 못 쓰는 '불치병'에 걸림.", emoji: "🖱️" },
+                { id: 3, name: "메디큐브 부스터브이롤러", link: "https://themedicube.co.kr/product/detail.html?product_no=2619", pros: "내일 아침이면 도연이 피부가 탕후루처럼 반짝반짝.", cons: "너무 열심히 문지르면 턱선이 너무 날카로워져서 위험할 수 있음.", emoji: "✨" },
+                { id: 4, name: "나이키 페가수스42", link: "https://www.nike.com/kr/t/pegasus-42-womens-road-running-shoes-wsTF7yIV/IB1881-500", pros: "구름 위를 걷는 기분. 도연이가 어디든 가뿐하게 날아갈 수 있음.", cons: "너무 편해서 집 안에서도 신고 있고 싶어질지도 모름.", emoji: "🏃🏻‍♀️" },
+                { id: 5, name: "하만카돈 루나", link: "https://www.ssg.com/item/itemView.ssg?itemId=1000568303462", pros: "귀 호강 종결자. 디자인까지 예뻐서 인테리어 지수 급상승.", cons: "음질이 너무 좋아서 집이 순식간에 콘서트홀로 변함 (이웃 주의).", emoji: "🔊" },
+                { id: 6, name: "메모 일하도멜", link: "https://www.coupang.com/vp/products/7490612959", pros: "지나가면 10명 중 9명이 향수 뭐냐고 물어볼 매혹적인 향기.", cons: "벌들이 도연이를 꽃인 줄 알고 따라올 수 있으니 주의 요망.", emoji: "🌸" }
+            ];
+
+            const containerRef = useRef(null);
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    if (containerRef.current) {
+                        const maxScroll = containerRef.current.scrollWidth - containerRef.current.clientWidth;
+                        if (containerRef.current.scrollLeft >= maxScroll - 10) {
+                            containerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                        } else {
+                            containerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+                        }
+                    }
+                }, 3500);
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <div className="min-h-screen pb-20 overflow-x-hidden">
+                    {/* Header */}
+                    <header className="pt-12 pb-8 text-center bg-white shadow-sm mb-8 rounded-b-[3rem]">
+                        <h1 className="text-3xl md:text-4xl font-bold text-pink-500 mb-2 flex items-center justify-center gap-2">
+                            <Icon name="Gift" className="w-8 h-8 text-pink-500" />
+                            Gift Shop for DoDo
+                        </h1>
+                        <p className="text-gray-500 italic">2026.04.19 Happy Birthday Doyeon!</p>
+                    </header>
+
+                    <main className="max-w-4xl mx-auto px-6">
+                        {/* Letter Section */}
+                        <section className="mb-16">
+                            <div 
+                                onClick={() => setIsLetterOpen(!isLetterOpen)}
+                                className={`cursor-pointer transition-all duration-500 transform bg-white p-6 md:p-10 rounded-2xl shadow-lg border-2 border-pink-100 ${isLetterOpen ? 'scale-105' : 'hover:scale-[1.02]'}`}
+                            >
+                                {!isLetterOpen ? (
+                                    <div className="flex flex-col items-center gap-4 py-4">
+                                        <Icon name="Mail" className="w-12 h-12 text-pink-400 animate-bounce-slow" />
+                                        <p className="text-xl font-medium text-pink-600">준희로부터 온 편지 (클릭!)</p>
+                                    </div>
+                                ) : (
+                                    <div className="relative overflow-hidden">
+                                        <div className="absolute top-0 right-0">
+                                            <Icon name="Heart" className="w-8 h-8 text-pink-100 fill-pink-100" />
+                                        </div>
+                                        <div className="space-y-4 leading-relaxed text-gray-700">
+                                            <p className="font-bold text-pink-600 text-xl">사랑하는 도연아,</p>
+                                            <p>안녕! 벌써 우리가 함께 맞이하는 또 한 번의 생일이네.</p>
+                                            <p>곧 있으면 네 27번째 생일이 다가오는데, 이번에는 좀 더 특별하게 선물을 주고 싶어서 이렇게 작은 샵을 열어봤어.</p>
+                                            <p>네가 어떤 걸 좋아할지 고민하며 골라봤는데, 이 중에서 가장 마음에 드는 걸로 하나 콕 집어주면 좋겠어!</p>
+                                            <p>태어나줘서 고맙고, 평생 아끼고 사랑할게.</p>
+                                            <div className="pt-6 text-right font-medium">
+                                                <p>2026년 4월 19일</p>
+                                                <p className="text-xl text-pink-600 font-bold">준희가 💌</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+
+                        {/* Gift Carousel */}
+                        <section className="mb-12">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                                    <Icon name="Heart" className="text-pink-400 w-6 h-6" />
+                                    오늘의 선물 후보
+                                </h2>
+                                <span className="text-sm text-gray-400">옆으로 넘겨보세요 →</span>
+                            </div>
+                            
+                            <div 
+                                ref={containerRef}
+                                className="flex overflow-x-auto gap-6 pb-6 no-scrollbar snap-x scroll-smooth"
+                            >
+                                {gifts.map((gift) => (
+                                    <div 
+                                        key={gift.id}
+                                        onClick={() => setSelectedGift(gift)}
+                                        className="min-w-[280px] bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition-all cursor-pointer snap-center border border-pink-50"
+                                    >
+                                        <div className="text-5xl mb-4 text-center">{gift.emoji}</div>
+                                        <h3 className="text-lg font-bold mb-4 text-center text-gray-700">{gift.name}</h3>
+                                        <div className="space-y-2">
+                                            <div className="bg-blue-50 p-3 rounded-xl text-xs">
+                                                <span className="font-bold text-blue-600 block mb-1">장점</span>
+                                                {gift.pros}
+                                            </div>
+                                            <div className="bg-red-50 p-3 rounded-xl text-xs">
+                                                <span className="font-bold text-red-600 block mb-1">단점</span>
+                                                {gift.cons}
+                                            </div>
+                                        </div>
+                                        <button className="w-full mt-6 bg-pink-500 text-white py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-pink-600 transition-colors">
+                                            자세히 보기 <Icon name="ChevronRight" className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </main>
+
+                    <footer className="text-center text-gray-400 text-xs mt-10">
+                        <p>© 2026 Junhee's Special Gift Service</p>
+                    </footer>
+
+                    {/* Modal */}
+                    {selectedGift && (
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+                            <div className="bg-white rounded-[2rem] max-w-sm w-full p-8 relative animate-in fade-in zoom-in duration-300">
+                                <button 
+                                    onClick={() => setSelectedGift(null)}
+                                    className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full"
+                                >
+                                    <Icon name="X" className="w-6 h-6 text-gray-400" />
+                                </button>
+                                
+                                <div className="text-center mb-6">
+                                    <div className="text-6xl mb-4">{selectedGift.emoji}</div>
+                                    <h3 className="text-2xl font-bold text-gray-800">{selectedGift.name}</h3>
+                                </div>
+
+                                <div className="space-y-4 mb-8">
+                                    <div className="border-l-4 border-blue-400 pl-4 py-1">
+                                        <p className="text-xs font-bold text-blue-500 uppercase">리얼 장점</p>
+                                        <p className="text-gray-700 text-sm">{selectedGift.pros}</p>
+                                    </div>
+                                    <div className="border-l-4 border-red-400 pl-4 py-1">
+                                        <p className="text-xs font-bold text-red-500 uppercase">솔직 단점</p>
+                                        <p className="text-gray-700 text-sm">{selectedGift.cons}</p>
+                                    </div>
+                                </div>
+
+                                <a 
+                                    href={selectedGift.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full bg-pink-500 text-white text-center py-4 rounded-2xl font-bold shadow-lg hover:bg-pink-600 flex items-center justify-center gap-2"
+                                >
+                                    상품 페이지로 이동 <Icon name="ExternalLink" className="w-5 h-5" />
+                                </a>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
